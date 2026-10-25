@@ -130,7 +130,7 @@ export default function ExpensesPage() {
               <label key={c.value} className="flex h-11 items-center gap-3">
                 <input
                   type="checkbox"
-                  className="h-5 w-5 accent-stone-900"
+                  className="h-5 w-5 accent-brand-500"
                   checked={on}
                   onChange={() => patch({ cat: (on ? cats.filter((x) => x !== c.value) : [...cats, c.value]).join(',') || null })}
                 />
@@ -150,7 +150,7 @@ export default function ExpensesPage() {
             <button
               key={p}
               type="button"
-              className={`btn ${period === p ? 'bg-stone-900 text-white' : 'border border-stone-200'}`}
+              className={`btn ${period === p ? 'bg-brand-600 text-white' : 'border border-stone-200'}`}
               onClick={() => {
                 patch({ period: p === 'all' ? null : p, ...(p === 'custom' ? {} : { from: null, to: null }) });
                 if (p !== 'custom') setSheet(null);
@@ -205,7 +205,7 @@ function OptionSheet({ open, title, options, value, onPick, onClose }: OptionShe
           <button
             key={o ?? '__all'}
             type="button"
-            className={`flex h-11 w-full items-center rounded-xl px-3 text-left ${value === o ? 'bg-stone-100 font-medium' : ''}`}
+            className={`flex h-11 w-full items-center rounded-xl px-3 text-left ${value === o ? 'bg-brand-50 font-medium' : ''}`}
             onClick={() => {
               onPick(o);
               onClose();

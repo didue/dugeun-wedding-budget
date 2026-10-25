@@ -9,7 +9,7 @@ export default function UpdatePrompt() {
 
   if (!needRefresh) return null;
   return (
-    <div className="fixed inset-x-4 top-[calc(env(safe-area-inset-top)+12px)] z-50 mx-auto flex max-w-md items-center justify-between rounded-2xl bg-stone-900 px-4 py-3 text-sm text-white">
+    <div className="fixed inset-x-4 top-[calc(env(safe-area-inset-top)+12px)] z-50 mx-auto flex max-w-md items-center justify-between rounded-2xl bg-brand-600 px-4 py-3 text-sm text-white">
       <span>새 버전이 있어요</span>
       <div className="flex gap-4">
         <button type="button" className="text-stone-400" onClick={() => setNeedRefresh(false)}>

@@ -26,7 +26,7 @@ export default function NumPad({ onDigit, onDelete, disabled, shuffleKey }: Prop
     setOrder(shuffled());
   }, [shuffleKey]);
 
-  const key = 'h-16 rounded-2xl text-2xl font-medium text-stone-900 active:bg-stone-100 disabled:opacity-40';
+  const key = 'h-16 rounded-2xl text-2xl font-medium text-stone-900 active:bg-brand-50 disabled:opacity-40';
 
   return (
     <div className="grid grid-cols-3 gap-2">

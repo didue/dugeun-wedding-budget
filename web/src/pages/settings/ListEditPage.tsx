@@ -153,7 +153,7 @@ function ListEditor({ type, data }: { type: ListType; data: Bootstrap }) {
                 )}
                 {type === 'category' && (
                   <label className="flex items-center gap-1.5">
-                    <input type="checkbox" className="accent-stone-900" checked={it.inBudget} onChange={(e) => patch(it.key, { inBudget: e.target.checked })} />
+                    <input type="checkbox" className="accent-brand-500" checked={it.inBudget} onChange={(e) => patch(it.key, { inBudget: e.target.checked })} />
                     예산 집계에 포함
                   </label>
                 )}

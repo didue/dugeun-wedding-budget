@@ -60,8 +60,8 @@ export default function ChecklistPage() {
                 완료 <span className="font-semibold text-stone-900">{doneCount}</span> / {data.checklist.length}
               </p>
             </div>
-            <div className="mt-3 h-2 overflow-hidden rounded-full bg-stone-100">
-              <div className="h-full bg-emerald-500" style={{ width: `${data.checklist.length ? (doneCount / data.checklist.length) * 100 : 0}%` }} />
+            <div className="mt-3 h-2 overflow-hidden rounded-full bg-brand-50">
+              <div className="h-full bg-brand-500" style={{ width: `${data.checklist.length ? (doneCount / data.checklist.length) * 100 : 0}%` }} />
             </div>
           </section>
         ) : (

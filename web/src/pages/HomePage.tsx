@@ -24,7 +24,7 @@ export default function HomePage() {
   return (
     <div>
       <PageHeader
-        title="우리 결혼 가계부"
+        title="디두와 그니의 결혼 가계부💸"
         right={
           d ? (
             <Link to="/checklist" className="rounded-lg bg-violet-50 px-2 py-1 text-sm font-medium text-violet-700">
@@ -45,9 +45,9 @@ export default function HomePage() {
             <p className="mt-1 text-xl font-semibold">
               {manwon(s.total)} <span className="text-base font-normal text-stone-400">/ {manwon(s.budget)}원</span>
             </p>
-            <div className="mt-3 flex h-2 overflow-hidden rounded-full bg-stone-100">
-              <div className="bg-stone-900" style={{ width: pct(s.done, s.budget) }} />
-              <div className="bg-stone-400" style={{ width: pct(s.planned, Math.max(s.budget, s.total)) }} />
+            <div className="mt-3 flex h-2 overflow-hidden rounded-full bg-brand-50">
+              <div className="bg-brand-500" style={{ width: pct(s.done, s.budget) }} />
+              <div className="bg-brand-200" style={{ width: pct(s.planned, Math.max(s.budget, s.total)) }} />
             </div>
             <p className={`mt-2 text-xs ${s.total > s.budget ? 'text-red-600' : 'text-stone-500'}`}>
               {s.total > s.budget ? `예산 초과 ${manwon(s.total - s.budget)}원` : `남은 예산 ${manwon(s.budget - s.total)}원`} ·{' '}
@@ -61,11 +61,11 @@ export default function HomePage() {
         )}
 
         <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-2xl bg-stone-100 p-4">
+          <div className="rounded-2xl bg-brand-50 p-4">
             <p className="text-xs text-stone-500">지출 완료</p>
             <p className="mt-1 text-lg font-semibold">{manwon(s.done)}원</p>
           </div>
-          <div className="rounded-2xl bg-stone-100 p-4">
+          <div className="rounded-2xl bg-brand-50 p-4">
             <p className="text-xs text-stone-500">지출 예정</p>
             <p className="mt-1 text-lg font-semibold">{manwon(s.planned)}원</p>
           </div>
@@ -88,7 +88,7 @@ export default function HomePage() {
                       onClick={() => navigate(`/expenses?cat=${encodeURIComponent(c.name)}`)}
                       className="flex w-full items-center gap-2 text-left text-sm"
                     >
-                      <span className="h-2.5 w-2.5 shrink-0 rounded-sm" style={{ background: colorOf(data.lists, 'category', c.name) }} />
+                      <span className="h-2.5 w-2.5 shrink-0 rounded-sm ring-1 ring-inset ring-black/5" style={{ background: colorOf(data.lists, 'category', c.name) }} />
                       <span className="flex-1">{c.name}</span>
                       <span className="text-stone-500">{Math.round(c.ratio * 100)}%</span>
                       <span className="w-20 text-right font-medium">{manwon(c.amount)}</span>

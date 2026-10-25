@@ -1,7 +1,21 @@
 import type { Aggregate, Bootstrap, Expense, ListType, Lists } from './types';
 import { addDays, sum, todayStr } from './format';
 
-export const FALLBACK_COLORS = ['#7F77DD', '#1D9E75', '#D4537E', '#378ADD', '#BA7517', '#D85A30', '#639922', '#993556', '#185FA5', '#888780'];
+/** 파스텔 팔레트. 앞 6개는 기준 팔레트, 뒤 6개는 같은 톤으로 확장. 이웃한 색끼리 색상이 겹치지 않게 배치 */
+export const FALLBACK_COLORS = [
+  '#FBD5DB', // 핑크
+  '#D0EADF', // 민트
+  '#E4D4EE', // 라벤더
+  '#FFF2B8', // 레몬
+  '#CFE3F7', // 스카이
+  '#FFD3C7', // 피치
+  '#DDEBC9', // 세이지
+  '#F3D0E6', // 로즈 라일락
+  '#CBEBEE', // 아쿠아
+  '#FFE2BC', // 살구
+  '#D7DAF5', // 페리윙클
+  '#EADBD0', // 베이지
+];
 
 export function amountOf(e: Expense) {
   return e.total ?? sum(e.deposit, e.middle, e.balance);
@@ -18,7 +32,7 @@ export function inBudget(lists: Lists, category: string | null) {
 export function colorOf(lists: Lists, type: ListType, value: string | null) {
   const items = lists[type];
   const i = items.findIndex((x) => x.value === value);
-  if (i < 0) return '#A8A29E';
+  if (i < 0) return '#E7E2DD';
   return items[i].color || FALLBACK_COLORS[i % FALLBACK_COLORS.length];
 }
 

@@ -103,7 +103,7 @@ export default function ExpenseForm({ initial, onSubmit, submitLabel = '저장',
         </Field>
         <div>
           <span className="label">총 견적 (자동 계산)</span>
-          <p className="flex h-11 items-center justify-end rounded-xl bg-stone-100 px-3 text-base font-medium">{won(total)}</p>
+          <p className="flex h-11 items-center justify-end rounded-xl bg-brand-50 px-3 text-base font-medium">{won(total)}</p>
         </div>
       </div>
 
