@@ -13,7 +13,7 @@ type Props = {
 export default function PageHeader({ title, back, right }: Props) {
   const navigate = useNavigate();
   return (
-    <header className="sticky top-0 z-20 bg-stone-50/95 pt-safe backdrop-blur">
+    <header className="sticky top-0 z-20 bg-white/95 pt-safe backdrop-blur">
       <div className="flex h-14 items-center gap-1 px-4">
         {back !== undefined && (
           <button type="button" aria-label="뒤로" onClick={() => goBack(navigate, back)} className="-ml-2 p-2">

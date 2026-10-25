@@ -3,6 +3,7 @@ import { Lock } from 'lucide-react';
 import NumPad from '../components/NumPad';
 import { ApiError, call, errorMessage } from '../lib/api';
 import { auth } from '../lib/auth';
+import { applyCache, openCache } from '../lib/bootCache';
 
 const PIN_LENGTH = 6;
 const DEFAULT_MSG = '6자리 PIN을 입력하세요';
@@ -37,9 +38,14 @@ export default function PinPage() {
     if (pin.length !== PIN_LENGTH) return;
     let cancelled = false;
     setBusy(true);
+    // 키 만들기(느림)를 PIN 검사와 같이 돌려서, 통과하면 지난 데이터부터 바로 보여줌
+    const cache = openCache(pin);
     call<{ token: string }>('auth', { pin })
-      .then((r) => {
-        if (!cancelled) auth.setToken(r.token);
+      .then(async (r) => {
+        const opened = await cache;
+        if (cancelled) return;
+        if (opened) await applyCache(opened);
+        auth.setToken(r.token);
       })
       .catch((e: unknown) => {
         if (cancelled) return;
@@ -93,17 +99,17 @@ export default function PinPage() {
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col bg-white px-6 pb-[calc(env(safe-area-inset-bottom)+24px)] pt-[calc(env(safe-area-inset-top)+64px)]">
       <div className="flex flex-1 flex-col items-center">
-        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-stone-100 text-stone-700">
+        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-50 text-brand-600">
           <Lock size={26} />
         </div>
         <h1 className="mt-5 text-xl font-semibold">PIN 번호 입력</h1>
-        <p className="mt-1 text-sm text-stone-500">우리 결혼 가계부</p>
+        <p className="mt-1 text-sm text-stone-500">디두와 그니의 결혼 가계부💸</p>
 
         <div key={shake} className={`mt-10 flex gap-4 ${shake ? 'animate-shake' : ''}`} aria-label={`${pin.length}자리 입력됨`}>
           {Array.from({ length: PIN_LENGTH }, (_, i) => (
             <span
               key={i}
-              className={`h-3.5 w-3.5 rounded-full border-2 transition-colors ${i < pin.length ? 'border-stone-900 bg-stone-900' : 'border-stone-300'}`}
+              className={`h-3.5 w-3.5 rounded-full border-2 transition-colors ${i < pin.length ? 'border-brand-500 bg-brand-500' : 'border-stone-300'}`}
             />
           ))}
         </div>

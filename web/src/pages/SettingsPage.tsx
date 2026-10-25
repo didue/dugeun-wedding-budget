@@ -38,7 +38,7 @@ function InstallRow() {
   if (isStandalone()) right = <span className="text-sm text-stone-500">설치됨</span>;
   else if (prompt)
     right = (
-      <button type="button" className="text-sm font-medium text-stone-900" onClick={() => void promptInstall()}>
+      <button type="button" className="text-sm font-medium text-brand-600" onClick={() => void promptInstall()}>
         설치
       </button>
     );
