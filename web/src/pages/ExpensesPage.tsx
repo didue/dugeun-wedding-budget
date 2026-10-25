@@ -1,12 +1,13 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { ArrowDownUp, ChevronDown, Search } from 'lucide-react';
+import { ArrowDownUp, ChevronDown, RotateCcw, Search } from 'lucide-react';
 import BottomSheet from '../components/BottomSheet';
 import ExpenseRow from '../components/ExpenseRow';
 import PageHeader from '../components/PageHeader';
 import { ErrorState, Loading } from '../components/States';
 import { amountOf } from '../lib/aggregate';
 import { addDays, monthEnd, todayStr, won } from '../lib/format';
+import { rememberExpensesQuery } from '../lib/nav';
 import { useBootstrap } from '../lib/queries';
 
 type Period = 'all' | 'month' | '30d' | 'custom';
@@ -31,7 +32,9 @@ export default function ExpensesPage() {
   const [sp, setSp] = useSearchParams();
   const [sheet, setSheet] = useState<SheetKind>(null);
 
-  // 필터는 URL에 저장 → 상세 화면에 갔다가 돌아와도 그대로
+  // 필터는 URL에 저장 → 상세 화면에 갔다가 돌아와도 그대로. 뒤로 갈 곳이 없을 때를 위해 세션에도 기억
+  useEffect(() => rememberExpensesQuery(sp.toString()), [sp]);
+
   const cats = useMemo(() => (sp.get('cat') ?? '').split(',').filter(Boolean), [sp]);
   const payer = sp.get('payer');
   const status = sp.get('status');
@@ -103,8 +106,13 @@ export default function ExpensesPage() {
 
         <div className="-mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-1">
           {filtered && (
-            <button type="button" className="chip" onClick={() => setSp(new URLSearchParams(), { replace: true })}>
-              초기화
+            <button
+              type="button"
+              className="chip border-brand-200 bg-brand-50 text-brand-700"
+              onClick={() => patch({ cat: null, payer: null, status: null, period: null, from: null, to: null, q: null })}
+            >
+              <RotateCcw size={14} />
+              필터 초기화
             </button>
           )}
           {chip('cat', catLabel, cats.length > 0)}

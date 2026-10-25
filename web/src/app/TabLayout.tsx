@@ -1,13 +1,24 @@
 import { useState } from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { Home, ListChecks, Plus, Receipt, Settings } from 'lucide-react';
 import BottomSheet from '../components/BottomSheet';
 import ExpenseForm from '../components/ExpenseForm';
 import OfflineBanner from '../components/OfflineBanner';
+import { expensesPath } from '../lib/nav';
 import { useExpenseMutations } from '../lib/queries';
 
 const tabClass = ({ isActive }: { isActive: boolean }) =>
   `flex flex-col items-center gap-0.5 py-1.5 text-[11px] ${isActive ? 'text-brand-600' : 'text-stone-400'}`;
+
+// 지출 탭은 마지막으로 보던 필터로 열림 (경로가 바뀔 때마다 다시 계산)
+function ExpensesTab() {
+  useLocation();
+  return (
+    <NavLink to={expensesPath()} className={tabClass}>
+      <Receipt size={22} />지출
+    </NavLink>
+  );
+}
 
 export default function TabLayout() {
   const [addOpen, setAddOpen] = useState(false);
@@ -23,9 +34,7 @@ export default function TabLayout() {
           <NavLink to="/" end className={tabClass}>
             <Home size={22} />홈
           </NavLink>
-          <NavLink to="/expenses" className={tabClass}>
-            <Receipt size={22} />지출
-          </NavLink>
+          <ExpensesTab />
           <button type="button" aria-label="지출 등록" onClick={() => setAddOpen(true)} className="flex items-center justify-center">
             <span className="-mt-5 flex h-14 w-14 items-center justify-center rounded-full bg-brand-500 text-white shadow-lg shadow-brand-500/30 active:scale-95">
               <Plus size={28} />

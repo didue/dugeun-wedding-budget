@@ -2,7 +2,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import ExpenseForm from '../components/ExpenseForm';
 import PageHeader from '../components/PageHeader';
 import { ErrorState, Loading } from '../components/States';
-import { goBack } from '../lib/nav';
+import { expensesPath, goBack } from '../lib/nav';
 import { useBootstrap, useExpenseMutations } from '../lib/queries';
 
 export default function ExpenseDetailPage() {
@@ -18,7 +18,7 @@ export default function ExpenseDetailPage() {
   if (!item) {
     return (
       <div>
-        <PageHeader title="지출 상세" back="/expenses" />
+        <PageHeader title="지출 상세" back={expensesPath()} />
         <p className="py-16 text-center text-sm text-stone-400">내역을 찾을 수 없어요</p>
       </div>
     );
@@ -26,7 +26,7 @@ export default function ExpenseDetailPage() {
 
   return (
     <div>
-      <PageHeader title="지출 상세" back="/expenses" />
+      <PageHeader title="지출 상세" back={expensesPath()} />
       <div className="px-4 pb-6">
         <ExpenseForm
           key={item.id}
@@ -34,7 +34,7 @@ export default function ExpenseDetailPage() {
           submitLabel="수정 저장"
           onSubmit={(d) => {
             update(item.id, d);
-            goBack(navigate, '/expenses');
+            goBack(navigate, expensesPath());
           }}
         />
         <button
@@ -43,7 +43,7 @@ export default function ExpenseDetailPage() {
           onClick={() => {
             if (!window.confirm(`'${item.title ?? ''}' 내역을 삭제할까요?\n「삭제기록」 시트에 보관돼요.`)) return;
             remove(item.id);
-            navigate('/expenses', { replace: true });
+            goBack(navigate, expensesPath());
           }}
         >
           삭제
