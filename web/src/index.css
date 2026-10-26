@@ -43,10 +43,27 @@ body {
     display: block;
     min-width: 0;
     max-width: 100%;
+    /* appearance를 끄면 iOS가 글자를 위쪽에 붙임 → 줄 높이로 세로 가운데 (h-11 44px − 위아래 테두리 2px) */
+    line-height: 42px;
   }
   input[type='date'].field::-webkit-date-and-time-value {
     margin: 0;
     text-align: left;
+    line-height: inherit;
+  }
+  /* 바텀시트 안 폼의 하단 버튼: 내용이 길어 스크롤돼도 시트 바닥에 붙어 항상 다 보이게.
+     시트(BottomSheet)의 좌우 px-4, 아래 여백을 음수 마진으로 덮고 같은 여백을 안쪽에 다시 줌 */
+  .sheet-footer {
+    position: sticky;
+    /* sticky 기준선이 시트 아래 여백 위라서, 그만큼 내려 실제 바닥에 붙임 */
+    bottom: calc(-1 * (env(safe-area-inset-bottom) + 16px));
+    z-index: 1;
+    margin-left: -1rem;
+    margin-right: -1rem;
+    margin-bottom: calc(-1 * (env(safe-area-inset-bottom) + 16px));
+    padding: 12px 1rem calc(env(safe-area-inset-bottom) + 16px);
+    background: #fff;
+    border-top: 1px solid theme('colors.stone.100');
   }
   .label {
     @apply mb-1 block text-xs text-stone-500;

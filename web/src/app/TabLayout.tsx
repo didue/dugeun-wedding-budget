@@ -52,6 +52,7 @@ export default function TabLayout() {
       {/* (+)는 탭 이동이 아니라 지금 화면 위에 등록 시트를 띄움 */}
       <BottomSheet open={addOpen} onClose={() => setAddOpen(false)} title="지출 등록">
         <ExpenseForm
+          inSheet
           onSubmit={(data) => {
             create(data);
             setAddOpen(false);

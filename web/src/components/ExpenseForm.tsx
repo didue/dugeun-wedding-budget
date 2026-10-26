@@ -41,9 +41,11 @@ type Props = {
   disabled?: boolean;
   /** 저장 버튼 왼쪽에 반반으로 놓을 버튼 (예: 삭제) */
   sideAction?: ReactNode;
+  /** 바텀시트 안에서 쓸 때: 저장 버튼을 시트 바닥에 고정 */
+  inSheet?: boolean;
 };
 
-export default function ExpenseForm({ initial, onSubmit, submitLabel = '저장', disabled, sideAction }: Props) {
+export default function ExpenseForm({ initial, onSubmit, submitLabel = '저장', disabled, sideAction, inSheet }: Props) {
   const { data } = useBootstrap();
   const [f, setF] = useState<ExpenseInput>(() => (initial ? toInput(initial) : { ...EMPTY, paidAt: todayStr() }));
   const [error, setError] = useState('');
@@ -147,7 +149,7 @@ export default function ExpenseForm({ initial, onSubmit, submitLabel = '저장',
         </div>
       )}
 
-      <div className={sideAction ? '!mt-6 grid grid-cols-2 gap-2' : ''}>
+      <div className={[sideAction && '!mt-6 grid grid-cols-2 gap-2', inSheet && 'sheet-footer'].filter(Boolean).join(' ')}>
         {sideAction}
         <button type="submit" className="btn-primary w-full" disabled={disabled}>
           {submitLabel}
