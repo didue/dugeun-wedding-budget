@@ -83,23 +83,29 @@ function PushRows() {
 
   if (!state) return null;
   const note = PUSH_NOTE[state];
+  const on = state === 'on';
 
   return (
     <>
       <div className="flex min-h-12 items-center justify-between gap-3 border-b border-stone-100 py-2">
-        <span className="shrink-0 text-[15px]">새 지출·마감일 알림</span>
+        <span id="push-label" className="shrink-0 text-[15px]">
+          새 지출·마감일 알림
+        </span>
         {note ? (
           <span className="text-right text-xs text-stone-500">{note}</span>
         ) : (
           <button
             type="button"
             role="switch"
-            aria-checked={state === 'on'}
+            aria-checked={on}
+            aria-labelledby="push-label"
             disabled={busy}
-            className="text-sm font-medium text-brand-600 disabled:text-stone-400"
-            onClick={() => void (state === 'on' ? run(disablePush, '알림을 껐어요') : run(enablePush, '알림을 켰어요'))}
+            className={`relative h-[31px] w-[51px] shrink-0 rounded-full transition-colors disabled:opacity-50 ${on ? 'bg-brand-600' : 'bg-stone-200'}`}
+            onClick={() => void (on ? run(disablePush, '알림을 껐어요') : run(enablePush, '알림을 켰어요'))}
           >
-            {state === 'on' ? '끄기' : '켜기'}
+            <span
+              className={`absolute left-[2px] top-[2px] h-[27px] w-[27px] rounded-full bg-white shadow transition-transform ${on ? 'translate-x-5' : ''}`}
+            />
           </button>
         )}
       </div>

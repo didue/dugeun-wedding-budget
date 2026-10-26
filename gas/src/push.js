@@ -98,6 +98,30 @@ function notifyNewExpense_(expense, exclude) {
   });
 }
 
+/** GAS 편집기에서 실행: 구독한 모든 기기에 테스트 알림을 보내고 단계별 결과를 로그로 보여 줌 */
+function testPush() {
+  const props = PropertiesService.getScriptProperties();
+  const url = props.getProperty('PUSH_URL');
+  const secret = props.getProperty('PUSH_SECRET');
+  const subs = readSubscriptions_();
+  Logger.log('구독 기기 %s개', subs.length);
+  Logger.log('PUSH_URL: %s', url || '(없음)');
+  Logger.log('PUSH_SECRET: %s', secret ? '있음 (' + secret.length + '자)' : '(없음)');
+  if (!subs.length || !url || !secret) return;
+
+  const res = UrlFetchApp.fetch(url, {
+    method: 'post',
+    contentType: 'application/json',
+    headers: { 'x-push-secret': secret },
+    payload: JSON.stringify({
+      subscriptions: subs.map((s) => ({ endpoint: s.endpoint, keys: s.keys })),
+      payload: { title: '🧪테스트 알림', body: '이 알림이 보이면 푸시 설정이 끝난 거예요', url: '/' },
+    }),
+    muteHttpExceptions: true,
+  });
+  Logger.log('응답 %s: %s', res.getResponseCode(), res.getContentText().slice(0, 500));
+}
+
 function comma_(n) {
   return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
