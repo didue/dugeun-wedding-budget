@@ -7,7 +7,7 @@ import { call, errorMessage } from '../lib/api';
 import { auth } from '../lib/auth';
 import { AUTO_LOCK_OPTIONS, getAutoLockMinutes, setAutoLockMinutes } from '../lib/autoLock';
 import { manwon } from '../lib/format';
-import { disablePush, enablePush, getMyName, getPushState, renamePush, type PushState } from '../lib/push';
+import { disablePush, enablePush, getPushState, type PushState } from '../lib/push';
 import { installStore, isIOS, isStandalone, promptInstall } from '../lib/pwa';
 import { useBootstrap } from '../lib/queries';
 import { toast } from '../lib/toast';
@@ -60,9 +60,8 @@ const PUSH_NOTE: Partial<Record<PushState, string>> = {
   denied: '기기 설정에서 이 앱의 알림을 허용해 주세요',
 };
 
-function PushRows({ names }: { names: string[] }) {
+function PushRows() {
   const [state, setState] = useState<PushState | null>(null);
-  const [name, setName] = useState(() => getMyName() ?? '');
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -87,29 +86,6 @@ function PushRows({ names }: { names: string[] }) {
 
   return (
     <>
-      <div className="flex h-12 items-center justify-between border-b border-stone-100">
-        <label htmlFor="push-name" className="text-[15px]">
-          이 기기 사용자
-        </label>
-        <select
-          id="push-name"
-          className="bg-transparent text-right text-sm text-stone-600"
-          value={name}
-          disabled={busy}
-          onChange={(e) => {
-            const v = e.target.value;
-            setName(v);
-            if (state === 'on') void run(() => renamePush(v), '저장했어요');
-          }}
-        >
-          <option value="">선택</option>
-          {names.map((n) => (
-            <option key={n} value={n}>
-              {n}
-            </option>
-          ))}
-        </select>
-      </div>
       <div className="flex min-h-12 items-center justify-between gap-3 border-b border-stone-100 py-2">
         <span className="shrink-0 text-[15px]">새 지출·마감일 알림</span>
         {note ? (
@@ -119,15 +95,15 @@ function PushRows({ names }: { names: string[] }) {
             type="button"
             role="switch"
             aria-checked={state === 'on'}
-            disabled={busy || (state === 'off' && !name)}
+            disabled={busy}
             className="text-sm font-medium text-brand-600 disabled:text-stone-400"
-            onClick={() => void (state === 'on' ? run(disablePush, '알림을 껐어요') : run(() => enablePush(name), '알림을 켰어요'))}
+            onClick={() => void (state === 'on' ? run(disablePush, '알림을 껐어요') : run(enablePush, '알림을 켰어요'))}
           >
-            {state === 'on' ? '끄기' : name ? '켜기' : '사용자를 먼저 선택'}
+            {state === 'on' ? '끄기' : '켜기'}
           </button>
         )}
       </div>
-      <p className="py-2 text-xs text-stone-500">상대방이 지출을 등록하면, 그리고 할 일 마감 7일 전·1일 전 오전 9시에 알려 드려요</p>
+      <p className="py-2 text-xs text-stone-500">다른 기기에서 지출을 등록하면, 그리고 할 일 마감 7일 전·1일 전 오전 9시에 알려 드려요</p>
     </>
   );
 }
@@ -157,7 +133,7 @@ export default function SettingsPage() {
         </Section>
 
         <Section title="알림">
-          <PushRows names={data.lists.payer.map((p) => p.value)} />
+          <PushRows />
         </Section>
 
         <Section title="앱">

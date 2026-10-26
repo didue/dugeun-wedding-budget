@@ -9,7 +9,7 @@
 const ROUTES = {
   'bootstrap':            { fn: () => bootstrap_() },
   'logout':               { fn: (req) => logout_(req.token) },
-  'expense.create':       { write: true, fn: (req) => createExpense_(req.data), after: (req, data) => notifyNewExpense_(data, req.by) },
+  'expense.create':       { write: true, fn: (req) => createExpense_(req.data), after: (req, data) => notifyNewExpense_(data, req.exclude) },
   'expense.update':       { write: true, fn: (req) => updateExpense_(req.id, req.data) },
   'expense.delete':       { write: true, fn: (req) => deleteExpense_(req.id) },
   'checklist.create':     { write: true, fn: (req) => createChecklist_(req.data) },
@@ -18,7 +18,7 @@ const ROUTES = {
   'checklist.delete':     { write: true, fn: (req) => deleteChecklist_(req.id) },
   'lists.save':           { write: true, fn: (req) => saveList_(req.type, req.items, req.renames) },
   'settings.save':        { write: true, fn: (req) => saveSettings_(req.data) },
-  'push.subscribe':       { write: true, fn: (req) => subscribePush_(req.subscription, req.name) },
+  'push.subscribe':       { write: true, fn: (req) => subscribePush_(req.subscription) },
   'push.unsubscribe':     { write: true, fn: (req) => unsubscribePush_(req.endpoint) },
 };
 

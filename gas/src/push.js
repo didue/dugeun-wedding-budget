@@ -1,8 +1,8 @@
 /**
  * 웹 푸시 구독과 알림
  *
- * 「푸시구독」 시트: endpoint | p256dh | auth | 이름 | 등록일시
- *   이름은 기기 주인(결제한 사람 목록 값). 지출을 등록한 사람을 빼고 알림을 보낼 때 씀
+ * 「푸시구독」 시트: endpoint | p256dh | auth | 등록일시
+ *   지출을 등록한 기기는 endpoint로 알아보고 알림에서 뺌
  *
  * 발송은 Vercel 함수(web/api/push.ts)가 함. Script Properties
  *   PUSH_URL     https://<배포 주소>/api/push
@@ -11,7 +11,7 @@
  * 마감일 알림은 GAS 편집기에서 setupReminderTrigger()를 한 번 실행해서 켬
  */
 
-const PUSH_HEADERS = ['endpoint', 'p256dh', 'auth', '이름', '등록일시'];
+const PUSH_HEADERS = ['endpoint', 'p256dh', 'auth', '등록일시'];
 const REMINDER_DAYS = [7, 1];
 const REMINDER_HOUR = 9;
 
@@ -23,9 +23,9 @@ function readSubscriptions_() {
   const sh = pushSheet_();
   const n = sh.getLastRow() - 1;
   if (n <= 0) return [];
-  return sh.getRange(2, 1, n, 4).getValues()
+  return sh.getRange(2, 1, n, 3).getValues()
     .filter((r) => r[0])
-    .map((r) => ({ endpoint: String(r[0]), keys: { p256dh: String(r[1]), auth: String(r[2]) }, name: String(r[3]) }));
+    .map((r) => ({ endpoint: String(r[0]), keys: { p256dh: String(r[1]), auth: String(r[2]) } }));
 }
 
 function findSubscriptionRow_(sh, endpoint) {
@@ -35,11 +35,11 @@ function findSubscriptionRow_(sh, endpoint) {
   return cell ? cell.getRow() : null;
 }
 
-/** 같은 기기(endpoint)면 이름·키만 바꿈 */
-function subscribePush_(sub, name) {
+/** 같은 기기(endpoint)면 키만 바꿈 */
+function subscribePush_(sub) {
   if (!sub || !sub.endpoint || !sub.keys || !sub.keys.p256dh || !sub.keys.auth) throw new AppError('invalid', { field: 'subscription' });
   const sh = pushSheet_();
-  const values = [sub.endpoint, sub.keys.p256dh, sub.keys.auth, String(name || ''), new Date()];
+  const values = [sub.endpoint, sub.keys.p256dh, sub.keys.auth, new Date()];
   const row = findSubscriptionRow_(sh, sub.endpoint);
   if (row) sh.getRange(row, 1, 1, values.length).setValues([values]);
   else sh.appendRow(values);
@@ -81,15 +81,17 @@ function sendPush_(subs, payload) {
   return out.sent || 0;
 }
 
-/** 지출 등록 직후: 등록한 사람(by)을 뺀 기기에 알림 */
-function notifyNewExpense_(expense, by) {
-  const subs = readSubscriptions_().filter((s) => !by || s.name !== by);
+/** 지출 등록 직후: 등록한 기기(exclude)를 뺀 나머지에 알림 */
+function notifyNewExpense_(expense, exclude) {
+  const subs = readSubscriptions_().filter((s) => s.endpoint !== exclude);
   const amount = expense.total || (expense.deposit || 0) + (expense.middle || 0) + (expense.balance || 0);
-  const body = [expense.category ? '[' + expense.category + ']' : '', expense.title, amount ? '· ' + comma_(amount) + '원' : '']
+  const summary = [expense.category ? '[' + expense.category + ']' : '', expense.title, amount ? '· ' + comma_(amount) + '원' : '']
     .filter(Boolean)
     .join(' ');
+  // 결제한 사람은 다음 줄에
+  const body = expense.payer ? summary + '\n결제한 사람: ' + expense.payer : summary;
   sendPush_(subs, {
-    title: (by ? by + '님이' : '새') + ' 지출을 등록했어요',
+    title: '💸새 지출이 등록됐어요',
     body: body,
     url: '/expenses/' + expense.id,
     tag: 'expense-' + expense.id,
@@ -140,10 +142,12 @@ function sendDueReminders() {
     const due = dayAfter_(days);
     const items = todo.filter((c) => c.dueDate === due);
     if (!items.length) return;
-    const names = items.map((c) => c.title + (c.owner ? ' (' + c.owner + ')' : ''));
+    // 한 줄에 하나씩. 잠금화면은 4줄 정도만 보여서 3개까지 적고 나머지는 "외 N개"로
+    const lines = items.slice(0, 3).map((c) => '- ' + c.title + (c.owner ? ' (' + c.owner + ')' : ''));
+    if (items.length > 3) lines.push('외 ' + (items.length - 3) + '개');
     sendPush_(subs, {
-      title: days === 1 ? '내일 마감인 할 일이 있어요' : '마감 ' + days + '일 전인 할 일이 있어요',
-      body: names.length > 3 ? names.slice(0, 3).join(', ') + ' 외 ' + (names.length - 3) + '개' : names.join(', '),
+      title: days === 1 ? '🔔내일 마감인 할 일이 있어요' : '🔔마감 ' + days + '일 전인 할 일이 있어요',
+      body: lines.join('\n'),
       url: '/checklist',
       tag: 'due-' + due,
     });
