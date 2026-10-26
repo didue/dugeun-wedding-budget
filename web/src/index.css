@@ -80,6 +80,10 @@ body {
   .btn-danger {
     @apply btn border border-red-200 bg-white text-red-600;
   }
+  /* 헤더 우측의 작은 저장 버튼 */
+  .btn-header {
+    @apply inline-flex h-8 items-center rounded-full bg-brand-600 px-3.5 text-sm font-medium text-white active:scale-[.98] disabled:opacity-50;
+  }
   .chip {
     @apply inline-flex h-8 shrink-0 items-center gap-1 rounded-full border border-stone-300 bg-white px-3 text-[13px] text-stone-700;
   }

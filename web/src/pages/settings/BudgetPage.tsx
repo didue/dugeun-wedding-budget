@@ -51,7 +51,7 @@ function BudgetForm({ data }: { data: Bootstrap }) {
         title="예산 설정"
         back="/settings"
         right={
-          <button type="button" className="text-[15px] font-medium" disabled={saving} onClick={() => void save()}>
+          <button type="button" className="btn-header" disabled={saving} onClick={() => void save()}>
             {saving ? '저장 중…' : '저장'}
           </button>
         }

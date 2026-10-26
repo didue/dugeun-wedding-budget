@@ -72,7 +72,7 @@ export default function SettingsPage() {
         </Section>
 
         <Section title="일정·예산">
-          <Row to="/settings/dday" label="결혼식 날짜" value={weddingDate ?? '미설정'} />
+          <Row to="/settings/dday" label="Wedding Day" value={weddingDate ?? '미설정'} />
           <Row to="/settings/budget" label="예산 설정" value={totalBudget ? `총 ${manwon(totalBudget)}원` : '미설정'} />
         </Section>
 

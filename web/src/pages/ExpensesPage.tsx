@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { ArrowDownUp, ChevronDown, RotateCcw, Search } from 'lucide-react';
 import BottomSheet from '../components/BottomSheet';
+import DateInput from '../components/DateInput';
 import ExpenseRow from '../components/ExpenseRow';
 import PageHeader from '../components/PageHeader';
 import { ErrorState, Loading } from '../components/States';
@@ -170,8 +171,8 @@ export default function ExpensesPage() {
         </div>
         {period === 'custom' && (
           <div className="mt-4 grid grid-cols-2 gap-3">
-            <input type="date" className="field" aria-label="시작일" value={from ?? ''} onChange={(e) => patch({ from: e.target.value || null })} />
-            <input type="date" className="field" aria-label="종료일" value={to ?? ''} onChange={(e) => patch({ to: e.target.value || null })} />
+            <DateInput aria-label="시작일" value={from ?? ''} onChange={(v) => patch({ from: v || null })} />
+            <DateInput aria-label="종료일" value={to ?? ''} onChange={(v) => patch({ to: v || null })} />
           </div>
         )}
       </BottomSheet>

@@ -119,7 +119,6 @@ export default function ChecklistPage() {
           <ChecklistForm
             key={editing === 'new' ? 'new' : editing.id}
             initial={editing === 'new' ? undefined : editing}
-            weddingDate={weddingDate}
             owners={owners}
             nextOrder={nextOrder}
             onSubmit={(d) => {

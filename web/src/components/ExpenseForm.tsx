@@ -3,6 +3,7 @@ import { ChevronDown } from 'lucide-react';
 import { useBootstrap } from '../lib/queries';
 import { sum, todayStr, won } from '../lib/format';
 import type { Expense, ExpenseInput, ListType } from '../lib/types';
+import DateInput from './DateInput';
 import { Field, SelectField } from './Field';
 import MoneyInput from './MoneyInput';
 import { Loading } from './States';
@@ -84,7 +85,7 @@ export default function ExpenseForm({ initial, onSubmit, submitLabel = '저장',
           <SelectField id="ex-category" value={f.category} options={options('category')} onChange={set('category')} />
         </Field>
         <Field label="결제일" htmlFor="ex-paidAt">
-          <input id="ex-paidAt" type="date" className="field" value={f.paidAt ?? ''} onChange={(e) => set('paidAt')(e.target.value || null)} />
+          <DateInput id="ex-paidAt" value={f.paidAt ?? ''} onChange={(v) => set('paidAt')(v || null)} />
         </Field>
       </div>
 
@@ -130,7 +131,7 @@ export default function ExpenseForm({ initial, onSubmit, submitLabel = '저장',
       {more && (
         <div className="space-y-3">
           <Field label="계약·예약일" htmlFor="ex-contractAt">
-            <input id="ex-contractAt" type="date" className="field" value={f.contractAt ?? ''} onChange={(e) => set('contractAt')(e.target.value || null)} />
+            <DateInput id="ex-contractAt" value={f.contractAt ?? ''} onChange={(v) => set('contractAt')(v || null)} />
           </Field>
           <Field label="업체 연락처" htmlFor="ex-contact">
             <input id="ex-contact" type="tel" className="field" value={f.contact ?? ''} onChange={text('contact')} />

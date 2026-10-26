@@ -1,21 +1,20 @@
 import { useState, type FormEvent } from 'react';
-import { GROUP_OFFSET } from '../lib/checklistTemplate';
-import { addDays } from '../lib/format';
+import { todayStr } from '../lib/format';
 import type { ChecklistInput, ChecklistItem } from '../lib/types';
+import DateInput from './DateInput';
 import { Field, SelectField } from './Field';
 
 type Props = {
   initial?: ChecklistItem;
-  weddingDate: string | null;
   owners: string[];
   nextOrder: number;
   onSubmit: (data: ChecklistInput) => void;
   onDelete?: () => void;
 };
 
-export default function ChecklistForm({ initial, weddingDate, owners, nextOrder, onSubmit, onDelete }: Props) {
+export default function ChecklistForm({ initial, owners, nextOrder, onSubmit, onDelete }: Props) {
   const [title, setTitle] = useState(initial?.title ?? '');
-  const [dueDate, setDueDate] = useState(initial?.dueDate ?? (weddingDate ? addDays(weddingDate, -GROUP_OFFSET['D-30']) : ''));
+  const [dueDate, setDueDate] = useState(initial?.dueDate ?? todayStr());
   const [owner, setOwner] = useState<string | null>(initial?.owner ?? null);
   const [memo, setMemo] = useState(initial?.memo ?? '');
   const [error, setError] = useState('');
@@ -53,7 +52,7 @@ export default function ChecklistForm({ initial, weddingDate, owners, nextOrder,
         />
       </Field>
       <Field label="마감일" htmlFor="ck-due">
-        <input id="ck-due" type="date" className="field" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+        <DateInput id="ck-due" value={dueDate} onChange={setDueDate} />
       </Field>
       <Field label="담당" htmlFor="ck-owner">
         <SelectField id="ck-owner" value={owner} options={owners} onChange={setOwner} placeholder="함께" />

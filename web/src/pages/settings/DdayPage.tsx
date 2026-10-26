@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import DateInput from '../../components/DateInput';
 import PageHeader from '../../components/PageHeader';
 import { ErrorState, Loading } from '../../components/States';
 import { dday, longDate } from '../../lib/format';
@@ -30,10 +31,10 @@ function DdayForm({ initial }: { initial: string | null }) {
   return (
     <div>
       <PageHeader
-        title="결혼식 날짜"
+        title="Wedding Day"
         back="/settings"
         right={
-          <button type="button" className="text-[15px] font-medium" disabled={saving} onClick={() => void save()}>
+          <button type="button" className="btn-header" disabled={saving} onClick={() => void save()}>
             {saving ? '저장 중…' : '저장'}
           </button>
         }
@@ -41,9 +42,9 @@ function DdayForm({ initial }: { initial: string | null }) {
       <div className="px-4">
         <section className="card">
           <label htmlFor="wedding-date" className="label">
-            결혼식 날짜
+            Wedding Day
           </label>
-          <input id="wedding-date" type="date" className="field" value={date} onChange={(e) => setDate(e.target.value)} />
+          <DateInput id="wedding-date" value={date} onChange={setDate} />
           {date && (
             <p className="mt-3 text-sm text-stone-600">
               {longDate(date)} · <span className="font-semibold text-violet-700">{dday(date)}</span>
