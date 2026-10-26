@@ -37,7 +37,7 @@ export default function HomePage() {
         }
       />
 
-      <div className="space-y-3 px-4">
+      <div className="space-y-3 px-4 mt-4">
         {s.budget ? (
           <section className="card">
             <p className="text-xs text-stone-500">총 예산 대비 지출</p>

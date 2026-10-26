@@ -31,23 +31,25 @@ export default function ExpenseDetailPage() {
         <ExpenseForm
           key={item.id}
           initial={item}
-          submitLabel="수정 저장"
+          submitLabel="저장"
           onSubmit={(d) => {
             update(item.id, d);
             goBack(navigate, expensesPath());
           }}
+          sideAction={
+            <button
+              type="button"
+              className="btn-danger w-full"
+              onClick={() => {
+                if (!window.confirm(`'${item.title ?? ''}' 내역을 삭제할까요?\n「삭제기록」 시트에 보관돼요.`)) return;
+                remove(item.id);
+                goBack(navigate, expensesPath());
+              }}
+            >
+              삭제
+            </button>
+          }
         />
-        <button
-          type="button"
-          className="btn-danger mt-3 w-full"
-          onClick={() => {
-            if (!window.confirm(`'${item.title ?? ''}' 내역을 삭제할까요?\n「삭제기록」 시트에 보관돼요.`)) return;
-            remove(item.id);
-            goBack(navigate, expensesPath());
-          }}
-        >
-          삭제
-        </button>
       </div>
     </div>
   );

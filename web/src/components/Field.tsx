@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react';
 
 export function Field({ label, htmlFor, error, children }: { label: string; htmlFor?: string; error?: string; children: ReactNode }) {
+  // min-w-0: 그리드 칸 안에서 입력창 기본 너비만큼 늘어나지 않도록
   return (
-    <div>
+    <div className="min-w-0">
       <label htmlFor={htmlFor} className="label">
         {label}
       </label>

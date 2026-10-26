@@ -50,7 +50,7 @@ export default function ChecklistPage() {
 
       <div className="space-y-4 px-4">
         {weddingDate ? (
-          <section className="card">
+          <section className="card mt-4">
             <div className="flex items-end justify-between">
               <div>
                 <p className="text-xs text-stone-500">{longDate(weddingDate)}</p>

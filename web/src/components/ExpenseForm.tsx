@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent, type FormEvent } from 'react';
+import { useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useBootstrap } from '../lib/queries';
 import { sum, todayStr, won } from '../lib/format';
@@ -39,9 +39,11 @@ type Props = {
   onSubmit: (data: ExpenseInput) => void;
   submitLabel?: string;
   disabled?: boolean;
+  /** 저장 버튼 왼쪽에 반반으로 놓을 버튼 (예: 삭제) */
+  sideAction?: ReactNode;
 };
 
-export default function ExpenseForm({ initial, onSubmit, submitLabel = '저장', disabled }: Props) {
+export default function ExpenseForm({ initial, onSubmit, submitLabel = '저장', disabled, sideAction }: Props) {
   const { data } = useBootstrap();
   const [f, setF] = useState<ExpenseInput>(() => (initial ? toInput(initial) : { ...EMPTY, paidAt: todayStr() }));
   const [error, setError] = useState('');
@@ -85,10 +87,10 @@ export default function ExpenseForm({ initial, onSubmit, submitLabel = '저장',
       </div>
 
       <Field label="내용" htmlFor="ex-title" error={error}>
-        <input id="ex-title" className="field" placeholder="웨딩홀 계약금" value={f.title ?? ''} onChange={text('title')} />
+        <input id="ex-title" className="field" placeholder="지출 내용 입력" value={f.title ?? ''} onChange={text('title')} />
       </Field>
       <Field label="업체" htmlFor="ex-vendor">
-        <input id="ex-vendor" className="field" placeholder="여의도 더 파티움" value={f.vendor ?? ''} onChange={text('vendor')} />
+        <input id="ex-vendor" className="field" placeholder="결제 업체 입력" value={f.vendor ?? ''} onChange={text('vendor')} />
       </Field>
 
       <div className="grid grid-cols-2 gap-3">
@@ -145,9 +147,12 @@ export default function ExpenseForm({ initial, onSubmit, submitLabel = '저장',
         </div>
       )}
 
-      <button type="submit" className="btn-primary w-full" disabled={disabled}>
-        {submitLabel}
-      </button>
+      <div className={sideAction ? '!mt-6 grid grid-cols-2 gap-2' : ''}>
+        {sideAction}
+        <button type="submit" className="btn-primary w-full" disabled={disabled}>
+          {submitLabel}
+        </button>
+      </div>
     </form>
   );
 }

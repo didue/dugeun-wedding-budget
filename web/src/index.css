@@ -36,6 +36,18 @@ body {
   .field {
     @apply h-11 w-full rounded-xl border border-stone-200 bg-white px-3 text-base outline-none focus:border-brand-400;
   }
+  /* iOS Safari: 날짜 입력창은 기본 최소 너비가 있어 w-full을 무시하고 칸 밖으로 넘침 */
+  input[type='date'].field {
+    -webkit-appearance: none;
+    appearance: none;
+    display: block;
+    min-width: 0;
+    max-width: 100%;
+  }
+  input[type='date'].field::-webkit-date-and-time-value {
+    margin: 0;
+    text-align: left;
+  }
   .label {
     @apply mb-1 block text-xs text-stone-500;
   }
