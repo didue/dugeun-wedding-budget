@@ -9,7 +9,7 @@
 const ROUTES = {
   'bootstrap':            { fn: () => bootstrap_() },
   'logout':               { fn: (req) => logout_(req.token) },
-  'expense.create':       { write: true, fn: (req) => createExpense_(req.data) },
+  'expense.create':       { write: true, fn: (req) => createExpense_(req.data), after: (req, data) => notifyNewExpense_(data, req.by) },
   'expense.update':       { write: true, fn: (req) => updateExpense_(req.id, req.data) },
   'expense.delete':       { write: true, fn: (req) => deleteExpense_(req.id) },
   'checklist.create':     { write: true, fn: (req) => createChecklist_(req.data) },
@@ -18,6 +18,8 @@ const ROUTES = {
   'checklist.delete':     { write: true, fn: (req) => deleteChecklist_(req.id) },
   'lists.save':           { write: true, fn: (req) => saveList_(req.type, req.items, req.renames) },
   'settings.save':        { write: true, fn: (req) => saveSettings_(req.data) },
+  'push.subscribe':       { write: true, fn: (req) => subscribePush_(req.subscription, req.name) },
+  'push.unsubscribe':     { write: true, fn: (req) => unsubscribePush_(req.endpoint) },
 };
 
 class AppError extends Error {
@@ -51,11 +53,22 @@ function doPost(e) {
     // 둘이 동시에 저장해도 행이 꼬이지 않도록 쓰기는 한 번에 하나씩
     const lock = LockService.getScriptLock();
     lock.waitLock(10000);
+    let data;
     try {
-      return json_({ ok: true, data: route.fn(req) });
+      data = route.fn(req);
     } finally {
       lock.releaseLock();
     }
+
+    // 알림 같은 뒷일은 잠금을 푼 뒤에 하고, 실패해도 저장 결과는 그대로 돌려줌
+    if (route.after) {
+      try {
+        route.after(req, data);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    return json_({ ok: true, data: data });
   } catch (err) {
     if (err instanceof AppError) return json_({ ok: false, error: err.code, detail: err.detail });
     console.error(err);

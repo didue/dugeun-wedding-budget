@@ -16,6 +16,7 @@ const SHEET = {
   budgets: '분류예산',
   checklist: '체크리스트',
   trash: '삭제기록',
+  push: '푸시구독',
 };
 
 function ss_() {

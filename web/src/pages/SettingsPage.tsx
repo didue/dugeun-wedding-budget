@@ -1,14 +1,16 @@
-import { useState, useSyncExternalStore, type ReactNode } from 'react';
+import { useEffect, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
 import { ErrorState, Loading } from '../components/States';
-import { call } from '../lib/api';
+import { call, errorMessage } from '../lib/api';
 import { auth } from '../lib/auth';
 import { AUTO_LOCK_OPTIONS, getAutoLockMinutes, setAutoLockMinutes } from '../lib/autoLock';
 import { manwon } from '../lib/format';
+import { disablePush, enablePush, getMyName, getPushState, renamePush, type PushState } from '../lib/push';
 import { installStore, isIOS, isStandalone, promptInstall } from '../lib/pwa';
 import { useBootstrap } from '../lib/queries';
+import { toast } from '../lib/toast';
 import { LIST_TYPES, type ListType } from '../lib/types';
 
 function Row({ to, label, value }: { to: string; label: string; value?: ReactNode }) {
@@ -52,6 +54,84 @@ function InstallRow() {
   );
 }
 
+const PUSH_NOTE: Partial<Record<PushState, string>> = {
+  'needs-install': '홈 화면에 추가한 앱에서 켤 수 있어요',
+  unsupported: '이 브라우저는 알림을 지원하지 않아요',
+  denied: '기기 설정에서 이 앱의 알림을 허용해 주세요',
+};
+
+function PushRows({ names }: { names: string[] }) {
+  const [state, setState] = useState<PushState | null>(null);
+  const [name, setName] = useState(() => getMyName() ?? '');
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    void getPushState().then(setState);
+  }, []);
+
+  const run = async (job: () => Promise<PushState | void>, done: string) => {
+    setBusy(true);
+    try {
+      const next = await job();
+      if (next) setState(next);
+      toast(next === 'denied' ? PUSH_NOTE.denied! : done);
+    } catch (e) {
+      toast(errorMessage(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (!state) return null;
+  const note = PUSH_NOTE[state];
+
+  return (
+    <>
+      <div className="flex h-12 items-center justify-between border-b border-stone-100">
+        <label htmlFor="push-name" className="text-[15px]">
+          이 기기 사용자
+        </label>
+        <select
+          id="push-name"
+          className="bg-transparent text-right text-sm text-stone-600"
+          value={name}
+          disabled={busy}
+          onChange={(e) => {
+            const v = e.target.value;
+            setName(v);
+            if (state === 'on') void run(() => renamePush(v), '저장했어요');
+          }}
+        >
+          <option value="">선택</option>
+          {names.map((n) => (
+            <option key={n} value={n}>
+              {n}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="flex min-h-12 items-center justify-between gap-3 border-b border-stone-100 py-2">
+        <span className="shrink-0 text-[15px]">새 지출·마감일 알림</span>
+        {note ? (
+          <span className="text-right text-xs text-stone-500">{note}</span>
+        ) : (
+          <button
+            type="button"
+            role="switch"
+            aria-checked={state === 'on'}
+            disabled={busy || (state === 'off' && !name)}
+            className="text-sm font-medium text-brand-600 disabled:text-stone-400"
+            onClick={() => void (state === 'on' ? run(disablePush, '알림을 껐어요') : run(() => enablePush(name), '알림을 켰어요'))}
+          >
+            {state === 'on' ? '끄기' : name ? '켜기' : '사용자를 먼저 선택'}
+          </button>
+        )}
+      </div>
+      <p className="py-2 text-xs text-stone-500">상대방이 지출을 등록하면, 그리고 할 일 마감 7일 전·1일 전 오전 9시에 알려 드려요</p>
+    </>
+  );
+}
+
 export default function SettingsPage() {
   const { data, isLoading, error, refetch } = useBootstrap();
   const [lockMin, setLockMin] = useState(getAutoLockMinutes);
@@ -74,6 +154,10 @@ export default function SettingsPage() {
         <Section title="일정·예산">
           <Row to="/settings/dday" label="Wedding Day" value={weddingDate ?? '미설정'} />
           <Row to="/settings/budget" label="예산 설정" value={totalBudget ? `총 ${manwon(totalBudget)}원` : '미설정'} />
+        </Section>
+
+        <Section title="알림">
+          <PushRows names={data.lists.payer.map((p) => p.value)} />
         </Section>
 
         <Section title="앱">

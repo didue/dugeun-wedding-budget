@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { call, errorMessage } from './api';
+import { getMyName } from './push';
 import { toast } from './toast';
 import type { Bootstrap, ChecklistInput, ChecklistItem, Expense, ExpenseInput, ListItem, ListType, Settings } from './types';
 
@@ -52,7 +53,8 @@ const tmpId = () => `tmp-${Date.now()}-${Math.random().toString(36).slice(2, 7)}
 
 export function useExpenseMutations() {
   const create = useBootMutation<{ tmpId: string; data: ExpenseInput }, Expense>({
-    fn: (v) => call<Expense>('expense.create', { data: v.data }),
+    // by: 등록한 사람. 이 사람을 뺀 기기에 푸시 알림이 감
+    fn: (v) => call<Expense>('expense.create', { data: v.data, by: getMyName() }),
     optimistic: (d, v) => ({ ...d, expenses: [{ ...v.data, id: v.tmpId }, ...d.expenses] }),
     settle: (d, r, v) => ({ ...d, expenses: d.expenses.map((e) => (e.id === v.tmpId ? r : e)) }),
     done: '저장했어요',
