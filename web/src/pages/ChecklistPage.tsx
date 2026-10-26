@@ -5,7 +5,7 @@ import BottomSheet from '../components/BottomSheet';
 import ChecklistForm from '../components/ChecklistForm';
 import PageHeader from '../components/PageHeader';
 import { ErrorState, Loading } from '../components/States';
-import { buildTemplate, GROUPS } from '../lib/checklistTemplate';
+import { buildTemplate } from '../lib/checklistTemplate';
 import { dday, longDate, shortDate, todayStr } from '../lib/format';
 import { useBootstrap, useChecklistMutations } from '../lib/queries';
 import type { ChecklistItem } from '../lib/types';
@@ -17,14 +17,16 @@ export default function ChecklistPage() {
 
   const groups = useMemo(() => {
     if (!data) return [];
+    // 마감일이 같은 달끼리 묶음. 키는 'YYYY-MM', 마감일 없으면 빈 키라 정렬 시 맨 앞
+    const NO_DUE = '';
     const by = new Map<string, ChecklistItem[]>();
     for (const it of data.checklist) {
-      const g = it.group && GROUPS.includes(it.group) ? it.group : '기타';
-      by.set(g, [...(by.get(g) ?? []), it]);
+      const key = it.dueDate ? it.dueDate.slice(0, 7) : NO_DUE;
+      by.set(key, [...(by.get(key) ?? []), it]);
     }
-    return GROUPS.filter((g) => by.has(g)).map((g) => ({
-      name: g,
-      items: by.get(g)!.sort((a, b) => (a.order ?? 0) - (b.order ?? 0) || (a.dueDate ?? '').localeCompare(b.dueDate ?? '')),
+    return [...by.keys()].sort().map((key) => ({
+      name: key === NO_DUE ? '마감일 없음' : `${key.slice(0, 4)}년 ${Number(key.slice(5, 7))}월`,
+      items: by.get(key)!.sort((a, b) => (a.dueDate ?? '').localeCompare(b.dueDate ?? '') || (a.order ?? 0) - (b.order ?? 0)),
     }));
   }, [data]);
 

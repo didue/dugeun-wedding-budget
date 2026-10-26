@@ -1,8 +1,6 @@
 import { addDays } from './format';
 import type { ChecklistInput } from './types';
 
-export const GROUPS = ['D-180', 'D-120', 'D-90', 'D-60', 'D-30', 'D-14', 'D-7', 'D-day', '이후', '기타'];
-
 /** 결혼식 며칠 전인지 (마감일 자동 제안에 사용) */
 export const GROUP_OFFSET: Record<string, number> = {
   'D-180': 180,
@@ -42,7 +40,7 @@ const TEMPLATE: [string, string][] = [
 export function buildTemplate(weddingDate: string | null): ChecklistInput[] {
   return TEMPLATE.map(([group, title], i) => ({
     title,
-    group,
+    group: null,
     dueDate: weddingDate ? addDays(weddingDate, -GROUP_OFFSET[group]) : null,
     done: false,
     owner: null,

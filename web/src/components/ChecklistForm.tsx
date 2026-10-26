@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { GROUPS, GROUP_OFFSET } from '../lib/checklistTemplate';
+import { GROUP_OFFSET } from '../lib/checklistTemplate';
 import { addDays } from '../lib/format';
 import type { ChecklistInput, ChecklistItem } from '../lib/types';
 import { Field, SelectField } from './Field';
@@ -15,18 +15,10 @@ type Props = {
 
 export default function ChecklistForm({ initial, weddingDate, owners, nextOrder, onSubmit, onDelete }: Props) {
   const [title, setTitle] = useState(initial?.title ?? '');
-  const [group, setGroup] = useState<string | null>(initial?.group ?? 'D-30');
   const [dueDate, setDueDate] = useState(initial?.dueDate ?? (weddingDate ? addDays(weddingDate, -GROUP_OFFSET['D-30']) : ''));
-  const [dueTouched, setDueTouched] = useState(Boolean(initial?.dueDate));
   const [owner, setOwner] = useState<string | null>(initial?.owner ?? null);
   const [memo, setMemo] = useState(initial?.memo ?? '');
   const [error, setError] = useState('');
-
-  const changeGroup = (g: string | null) => {
-    setGroup(g);
-    // 마감일을 직접 고치지 않았다면 그룹에 맞춰 자동 제안
-    if (!dueTouched && weddingDate && g && g in GROUP_OFFSET) setDueDate(addDays(weddingDate, -GROUP_OFFSET[g]));
-  };
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
@@ -36,7 +28,8 @@ export default function ChecklistForm({ initial, weddingDate, owners, nextOrder,
     }
     onSubmit({
       title: title.trim(),
-      group,
+      // 시기(그룹)는 더 이상 쓰지 않음. 예전에 저장된 값만 그대로 둠
+      group: initial?.group ?? null,
       dueDate: dueDate || null,
       done: initial?.done ?? false,
       owner,
@@ -59,23 +52,9 @@ export default function ChecklistForm({ initial, weddingDate, owners, nextOrder,
           }}
         />
       </Field>
-      <div className="grid grid-cols-2 gap-3">
-        <Field label="시기" htmlFor="ck-group">
-          <SelectField id="ck-group" value={group} options={GROUPS} onChange={changeGroup} />
-        </Field>
-        <Field label="마감일" htmlFor="ck-due">
-          <input
-            id="ck-due"
-            type="date"
-            className="field"
-            value={dueDate}
-            onChange={(e) => {
-              setDueDate(e.target.value);
-              setDueTouched(true);
-            }}
-          />
-        </Field>
-      </div>
+      <Field label="마감일" htmlFor="ck-due">
+        <input id="ck-due" type="date" className="field" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+      </Field>
       <Field label="담당" htmlFor="ck-owner">
         <SelectField id="ck-owner" value={owner} options={owners} onChange={setOwner} placeholder="함께" />
       </Field>
