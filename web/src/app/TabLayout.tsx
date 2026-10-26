@@ -25,7 +25,7 @@ export default function TabLayout() {
   const { create } = useExpenseMutations();
 
   return (
-    <div className="mx-auto min-h-dvh max-w-md bg-white shadow-[0_0_24px_rgba(63,123,201,0.08)] pb-[calc(env(safe-area-inset-bottom)+72px)]">
+    <div className="mx-auto min-h-dvh max-w-md bg-white shadow-[0_0_24px_rgba(41,41,204,0.08)] pb-[calc(env(safe-area-inset-bottom)+72px)]">
       <OfflineBanner />
       <Outlet />
 

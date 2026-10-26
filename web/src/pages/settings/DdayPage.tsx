@@ -47,7 +47,7 @@ function DdayForm({ initial }: { initial: string | null }) {
           <DateInput id="wedding-date" value={date} onChange={setDate} />
           {date && (
             <p className="mt-3 text-sm text-stone-600">
-              {longDate(date)} · <span className="font-semibold text-violet-700">{dday(date)}</span>
+              {longDate(date)} · <span className="font-semibold text-blush-700">{dday(date)}</span>
             </p>
           )}
         </section>

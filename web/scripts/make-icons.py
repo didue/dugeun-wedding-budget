@@ -1,6 +1,6 @@
 """임시 앱 아이콘 생성 (외부 라이브러리 없이 PNG 작성)
 
-테마 키컬러(소라색 #B6D7FD) 배경에 겹친 반지 두 개. 원하는 이미지가 생기면 public/icons/ 의 파일만 같은 이름으로 바꾸면 됩니다.
+테마 키컬러(로열 블루 #3E44CC, brand-500) 배경에 겹친 반지 두 개. 원하는 이미지가 생기면 public/icons/ 의 파일만 같은 이름으로 바꾸면 됩니다.
 실행: python3 scripts/make-icons.py
 """
 import math
@@ -8,7 +8,7 @@ import os
 import struct
 import zlib
 
-BG = (182, 215, 253)
+BG = (62, 68, 204)
 FG = (255, 255, 255)
 OUT = os.path.join(os.path.dirname(__file__), '..', 'public', 'icons')
 

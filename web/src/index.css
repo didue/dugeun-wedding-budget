@@ -9,8 +9,8 @@
 
 html,
 body {
-  /* 모바일 화면 밖 여백. 앱 영역은 각 레이아웃에서 흰색 */
-  background: #e2eefc;
+  /* 모바일 화면 밖 여백. 앱 영역은 각 레이아웃에서 흰색 (brand-100) */
+  background: theme('colors.brand.100');
 }
 
 body {

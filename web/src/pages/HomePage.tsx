@@ -26,7 +26,7 @@ export default function HomePage() {
         title="디두와 그니의 결혼 가계부💸"
         right={
           d ? (
-            <Link to="/checklist" className="rounded-lg bg-violet-50 px-2 py-1 text-sm font-medium text-violet-700">
+            <Link to="/checklist" className="rounded-lg bg-blush-50 px-2 py-1 text-sm font-medium text-blush-700">
               {d}
             </Link>
           ) : (
@@ -44,9 +44,9 @@ export default function HomePage() {
             <p className="mt-1 text-xl font-semibold">
               {manwon(s.total)} <span className="text-base font-normal text-stone-400">/ {manwon(s.budget)}원</span>
             </p>
-            <div className="mt-3 flex h-2 overflow-hidden rounded-full bg-brand-50">
-              <div className="bg-brand-500" style={{ width: pct(s.done, s.budget) }} />
-              <div className="bg-brand-200" style={{ width: pct(s.planned, Math.max(s.budget, s.total)) }} />
+            <div className="mt-3 flex h-2 overflow-hidden rounded-full bg-blush-50">
+              <div className="bg-blush-500" style={{ width: pct(s.done, s.budget) }} />
+              <div className="bg-blush-200" style={{ width: pct(s.planned, Math.max(s.budget, s.total)) }} />
             </div>
             <p className={`mt-2 text-xs ${s.total > s.budget ? 'text-red-600' : 'text-stone-500'}`}>
               {s.total > s.budget ? `예산 초과 ${manwon(s.total - s.budget)}원` : `남은 예산 ${manwon(s.budget - s.total)}원`} ·{' '}
