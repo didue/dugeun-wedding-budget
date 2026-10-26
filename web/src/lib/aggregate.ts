@@ -36,6 +36,29 @@ export function colorOf(lists: Lists, type: ListType, value: string | null) {
   return items[i].color || FALLBACK_COLORS[i % FALLBACK_COLORS.length];
 }
 
+export type ShareBy = 'category' | 'payer' | 'status';
+export type ShareScope = 'all' | 'done' | 'planned';
+
+/** 홈 지출 비중 차트. 예산포함 여부와 상관없이 집계하고, 숨긴 항목은 비율 계산에서도 뺌 */
+export function breakdown(d: Bootstrap, by: ShareBy, scope: ShareScope, hidden: string[]) {
+  const map = new Map<string, number>();
+  for (const e of d.expenses) {
+    const kind = kindOf(d.lists, e.status);
+    if (kind === 'excluded') continue;
+    if (scope !== 'all' && kind !== scope) continue;
+    const name = e[by] ?? '미분류';
+    if (hidden.includes(name)) continue;
+    map.set(name, (map.get(name) ?? 0) + amountOf(e));
+  }
+  // 파이는 음수를 그릴 수 없으니 합이 0 이하인 항목은 뺌
+  const positive = [...map.entries()].filter(([, amount]) => amount > 0);
+  const total = positive.reduce((a, [, amount]) => a + amount, 0);
+  const items = positive
+    .map(([name, amount]) => ({ name, amount, ratio: total ? amount / total : 0 }))
+    .sort((a, b) => b.amount - a.amount);
+  return { total, items };
+}
+
 /** 홈 대시보드 숫자. 예산포함이 꺼진 분류와 집계구분이 '제외'인 진행상황은 빠짐 */
 export function summarize(d: Bootstrap) {
   let done = 0;
@@ -71,6 +94,5 @@ export function summarize(d: Bootstrap) {
     budget: d.settings.totalBudget,
     categories,
     recent,
-    excludedCategories: d.lists.category.filter((i) => !i.inBudget).map((i) => i.value),
   };
 }

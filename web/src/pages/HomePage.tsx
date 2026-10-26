@@ -1,10 +1,11 @@
 import { useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import ExpenseRow from '../components/ExpenseRow';
 import PageHeader from '../components/PageHeader';
+import SpendingShare from '../components/SpendingShare';
 import { ErrorState, Loading } from '../components/States';
-import { colorOf, summarize } from '../lib/aggregate';
+import { summarize } from '../lib/aggregate';
 import { dday, manwon } from '../lib/format';
 import { useBootstrap } from '../lib/queries';
 
@@ -12,14 +13,12 @@ const pct = (part: number, whole: number) => `${Math.max(0, Math.min(100, (part 
 
 export default function HomePage() {
   const { data, isLoading, error, refetch } = useBootstrap();
-  const navigate = useNavigate();
   const s = useMemo(() => (data ? summarize(data) : null), [data]);
 
   if (isLoading) return <Loading />;
   if (!data || !s) return <ErrorState error={error} onRetry={() => void refetch()} />;
 
   const d = dday(data.settings.weddingDate);
-  const over = s.categories.filter((c) => c.budget !== null && c.amount > c.budget);
 
   return (
     <div>
@@ -71,55 +70,11 @@ export default function HomePage() {
           </div>
         </div>
 
-        <section className="card">
-          <h2 className="text-sm font-semibold">분류별 지출 비율</h2>
-          {s.categories.length ? (
-            <>
-              <div className="mt-3 flex h-3 overflow-hidden rounded-full">
-                {s.categories.map((c) => (
-                  <div key={c.name} style={{ width: `${c.ratio * 100}%`, background: colorOf(data.lists, 'category', c.name) }} />
-                ))}
-              </div>
-              <ul className="mt-3 space-y-1.5">
-                {s.categories.map((c) => (
-                  <li key={c.name}>
-                    <button
-                      type="button"
-                      onClick={() => navigate(`/expenses?cat=${encodeURIComponent(c.name)}`)}
-                      className="flex w-full items-center gap-2 text-left text-sm"
-                    >
-                      <span className="h-2.5 w-2.5 shrink-0 rounded-sm ring-1 ring-inset ring-black/5" style={{ background: colorOf(data.lists, 'category', c.name) }} />
-                      <span className="flex-1">{c.name}</span>
-                      <span className="text-stone-500">{Math.round(c.ratio * 100)}%</span>
-                      <span className="w-20 text-right font-medium">{manwon(c.amount)}</span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </>
-          ) : (
-            <p className="mt-2 text-sm text-stone-400">아직 지출 내역이 없어요</p>
-          )}
-          {s.excludedCategories.length > 0 && <p className="mt-3 text-xs text-stone-400">{s.excludedCategories.join(', ')}은(는) 예산 집계에서 빠져 있어요</p>}
-        </section>
-
-        {over.length > 0 && (
-          <section className="card ring-red-200">
-            <h2 className="text-sm font-semibold text-red-600">예산을 넘은 분류</h2>
-            <ul className="mt-2 space-y-1 text-sm">
-              {over.map((c) => (
-                <li key={c.name} className="flex justify-between">
-                  <span>{c.name}</span>
-                  <span className="text-red-600">+{manwon(c.amount - (c.budget ?? 0))}원</span>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
+        <SpendingShare data={data} />
 
         <section className="card">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold">최근 7일 지출</h2>
+            <h2 className="text-sm font-semibold">최근 7일간 지출</h2>
             <Link to="/expenses" className="text-xs text-stone-500">
               전체 보기
             </Link>

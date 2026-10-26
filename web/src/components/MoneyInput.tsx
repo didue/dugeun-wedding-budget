@@ -9,6 +9,15 @@ type Props = {
 /** 숫자 키패드로 입력, 쉼표 자동 */
 export default function MoneyInput({ id, value, onChange }: Props) {
   const [text, setText] = useState(value === null ? '' : value.toLocaleString('ko-KR'));
+  const [prev, setPrev] = useState(value);
+
+  // 바깥에서 값이 바뀌면(자동 합계 등) 입력칸도 따라감
+  if (value !== prev) {
+    setPrev(value);
+    const raw = text.replace(/[^\d-]/g, '');
+    const typed = raw === '' || raw === '-' ? null : Number(raw);
+    if (typed !== value) setText(value === null ? '' : value.toLocaleString('ko-KR'));
+  }
 
   return (
     <div className="relative">

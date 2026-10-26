@@ -19,12 +19,18 @@ export default function BudgetPage() {
 function BudgetForm({ data }: { data: Bootstrap }) {
   const navigate = useNavigate();
   const { saveSettings, saving } = useSettingsMutations();
-  const [total, setTotal] = useState<number | null>(data.settings.totalBudget);
+  const [manualTotal, setManualTotal] = useState<number | null>(data.settings.totalBudget);
   const [budgets, setBudgets] = useState<Record<string, number | null>>(() => ({ ...data.settings.budgets }));
 
   const spent = useMemo(() => new Map(summarize(data).categories.map((c) => [c.name, c.amount])), [data]);
   const categories = data.lists.category.filter((c) => c.inBudget);
   const catSum = categories.reduce((a, c) => a + (budgets[c.value] ?? 0), 0);
+  // 총 예산이 비었거나 분류별 합계와 같으면 자동 합계로 시작
+  const [auto, setAuto] = useState(() => {
+    const initial = data.settings.totalBudget;
+    return initial === null || initial === catSum;
+  });
+  const total = auto ? (catSum > 0 ? catSum : null) : manualTotal;
 
   const save = async () => {
     const clean: Record<string, number> = {};
@@ -52,11 +58,27 @@ function BudgetForm({ data }: { data: Bootstrap }) {
       />
       <div className="space-y-5 px-4 pb-6">
         <section className="card">
-          <label htmlFor="total-budget" className="label">
-            총 예산
-          </label>
-          <MoneyInput id="total-budget" value={total} onChange={setTotal} />
-          {total !== null && catSum > 0 && (
+          <div className="flex items-center justify-between">
+            <label htmlFor="total-budget" className="label">
+              총 예산
+            </label>
+            {auto ? (
+              <span className="text-xs text-stone-400">분류별 합계로 자동 계산</span>
+            ) : (
+              <button type="button" className="text-xs font-medium text-stone-500 underline" onClick={() => setAuto(true)}>
+                합계로 맞추기
+              </button>
+            )}
+          </div>
+          <MoneyInput
+            id="total-budget"
+            value={total}
+            onChange={(v) => {
+              setAuto(false);
+              setManualTotal(v);
+            }}
+          />
+          {!auto && total !== null && catSum > 0 && (
             <p className={`mt-2 text-xs ${catSum > total ? 'text-red-600' : 'text-stone-500'}`}>
               분류별 예산 합계 {won(catSum)} {catSum > total ? '· 총 예산보다 많아요' : ''}
             </p>
